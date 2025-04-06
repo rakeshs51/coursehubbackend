@@ -23,19 +23,18 @@ const app: Application = express();
 const server = http.createServer(app);
 
 // Middleware
-// Update CORS configuration - temporarily allow all origins for debugging
-console.log('CORS Configuration: Allowing all origins temporarily for debugging');
+console.log('CORS Configuration: Allowing all origins');
 
 // Add a specific OPTIONS handler for preflight requests
 app.options('*', cors({
-  origin: '*',
+  origin: true, // This allows all origins while maintaining credentials support
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 app.use(cors({
-  origin: '*',
+  origin: true, // This allows all origins while maintaining credentials support
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
