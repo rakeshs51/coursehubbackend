@@ -1,7 +1,7 @@
 {
   "name": "coursehub-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
@@ -9,8 +9,8 @@
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "build:prod": "tsc --project tsconfig.prod.json",
-    "postinstall": "npm run build",
+    "build:prod": "tsc",
+    "postinstall": "npm install && npm run build",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
   },
