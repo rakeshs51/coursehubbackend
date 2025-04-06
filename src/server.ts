@@ -24,16 +24,33 @@ const server = http.createServer(app);
 
 // Middleware
 // Update CORS configuration
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:8080'];
+const defaultOrigins = [
+  'http://localhost:8080',
+  'http://localhost:3000',
+  'https://coursehub-frontend-97iznr21d-rakesh-ss-projects.vercel.app'
+];
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || defaultOrigins;
+
+console.log('Allowed Origins:', allowedOrigins);
+
 app.use(cors({
   origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log('Blocked origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 app.use(express.json());
 
