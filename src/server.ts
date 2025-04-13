@@ -150,34 +150,21 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
 
 app.use(errorHandler);
 
-// Graceful shutdown handler
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received. Closing HTTP server...');
-  server.close(() => {
-    console.log('HTTP server closed');
-    process.exit(0);
-  });
-});
-
-// Start server
-const PORT = process.env.PORT || 5000;
-const startServer = async () => {
+// Initialize database connection
+const initializeApp = async () => {
   try {
     if (process.env.NODE_ENV !== 'test') {
       await connectDB();
     }
-    server.listen(PORT, () => {
-      console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-    });
+    console.log('Database connected successfully');
   } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
+    console.error('Failed to initialize app:', error);
+    throw error;
   }
 };
 
-// Only start the server if this file is run directly
-if (require.main === module) {
-  startServer();
-}
+// Initialize the app
+initializeApp();
 
-export { app, server, startServer };
+// Export the Express app for Vercel
+export default app;
