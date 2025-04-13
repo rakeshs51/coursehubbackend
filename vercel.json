@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "builds": [
     {
       "src": "dist/server.js",
@@ -8,19 +10,8 @@
   ],
   "routes": [
     {
-      "src": "/api/v1/(.*)",
-      "dest": "/dist/server.js"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/dist/server.js"
+      "dest": "dist/server.js"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "PORT": "5000",
-    "ALLOWED_ORIGINS": "https://coursehub-frontend.vercel.app,http://localhost:3000",
-    "FRONTEND_URL": "https://coursehub-frontend.vercel.app",
-    "JWT_EXPIRE": "30d"
-  }
+  ]
 } 

@@ -194,5 +194,4 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Export the Express app for Vercel
-module.exports = app;
 export default app;
