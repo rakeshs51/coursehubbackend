@@ -150,24 +150,47 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
 
 app.use(errorHandler);
 
+const PORT = process.env.PORT || 5000;
+
 // Initialize database connection
 const initializeApp = async () => {
   try {
     if (process.env.NODE_ENV !== 'test') {
       await connectDB();
+      console.log('Database connected successfully');
     }
-    console.log('Database connected successfully');
   } catch (error) {
     console.error('Failed to initialize app:', error);
-    // Don't throw in production, just log the error
+    // In production, log the error but don't throw
     if (process.env.NODE_ENV !== 'production') {
       throw error;
     }
   }
 };
 
-// Initialize the app
-initializeApp();
+// Initialize database connection immediately for non-serverless environments
+if (process.env.NODE_ENV !== 'production') {
+  initializeApp();
+}
+
+// For production/Vercel, initialize DB connection per request
+if (process.env.NODE_ENV === 'production') {
+  app.use(async (req, res, next) => {
+    try {
+      await initializeApp();
+      next();
+    } catch (error) {
+      next(error);
+    }
+  });
+}
+
+// Start server if not running in Vercel
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
 
 // Export the Express app for Vercel
 export default app;
