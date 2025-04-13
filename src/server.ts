@@ -23,24 +23,66 @@ const app: Application = express();
 const server = http.createServer(app);
 
 // Middleware
-console.log('CORS Configuration: Allowing all origins');
+console.log('CORS Configuration: Setting up CORS');
 
-// Add a specific OPTIONS handler for preflight requests
-app.options('*', cors({
-  origin: true, // This allows all origins while maintaining credentials support
+// Parse allowed origins from environment variable
+const parseAllowedOrigins = (): string[] => {
+  const origins = process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(',') 
+    : [];
+  
+  // Add frontend URL from environment variable
+  if (process.env.FRONTEND_URL) {
+    origins.push(process.env.FRONTEND_URL);
+  }
+  
+  // Add default origins for development
+  if (process.env.NODE_ENV !== 'production') {
+    origins.push('http://localhost:3000');
+  }
+  
+  // Filter out empty strings and duplicates
+  return [...new Set(origins.filter(Boolean))];
+};
+
+const allowedOrigins = parseAllowedOrigins();
+console.log('Allowed origins:', allowedOrigins);
+
+// Configure CORS with more specific options
+const corsOptions = {
+  origin: function(origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.length === 0 || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      console.log('Origin not allowed by CORS:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400 // 24 hours
+};
 
-app.use(cors({
-  origin: true, // This allows all origins while maintaining credentials support
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+// Apply CORS with the configured options
+app.use(cors(corsOptions));
 
 app.use(express.json());
+
+// Test endpoint for CORS debugging
+app.get('/api/v1/test-cors', (req, res) => {
+  console.log('Test CORS endpoint hit');
+  console.log('Headers:', req.headers);
+  res.json({ 
+    message: 'CORS test successful',
+    headers: req.headers,
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, '../uploads');

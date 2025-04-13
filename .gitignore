@@ -7,26 +7,36 @@ yarn.lock
 dist/
 build/
 
-# Environment files
+# Environment variables
 .env
 .env.local
-.env.*.local
-.env.development
-.env.test
-.env.production
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Logs
-logs
+logs/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+npm-debug.log
+yarn-debug.log
+yarn-error.log
 
-# Testing
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Directory for uploaded files
+uploads/
+
+# Coverage directory used by tools like istanbul
 coverage/
+
+# nyc test coverage
 .nyc_output/
 
-# IDE
+# IDEs and editors
 .idea/
 .vscode/
 *.swp
@@ -39,7 +49,7 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
-uploads/
 
 # TypeScript
 *.tsbuildinfo 
+.vercel
