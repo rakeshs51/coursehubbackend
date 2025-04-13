@@ -10,7 +10,6 @@ import bookmarkRoutes from './routes/bookmarkRoutes';
 import noteRoutes from './routes/noteRoutes';
 import profileRoutes from './routes/profileRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
-import path from 'path';
 import http from 'http';
 
 // Load environment variables
@@ -84,15 +83,6 @@ app.get('/api/v1/test-cors', (req, res) => {
   });
 });
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '../uploads');
-if (!require('fs').existsSync(uploadsDir)){
-    require('fs').mkdirSync(uploadsDir, { recursive: true });
-}
-
-// Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-
 // Health check route
 app.get('/api/v1/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
@@ -136,6 +126,16 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     res.status(400).json({
       success: false,
       message: err.message
+    });
+    return;
+  }
+
+  // Handle MongoDB connection errors
+  if (err.name === 'MongoError' || err.name === 'MongoServerError') {
+    res.status(500).json({
+      success: false,
+      message: 'Database connection error',
+      error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
     });
     return;
   }
