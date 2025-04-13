@@ -180,6 +180,7 @@ if (process.env.NODE_ENV === 'production') {
       await initializeApp();
       next();
     } catch (error) {
+      console.error('Database connection error:', error);
       next(error);
     }
   });
@@ -193,4 +194,5 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Export the Express app for Vercel
+module.exports = app;
 export default app;
