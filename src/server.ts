@@ -10,28 +10,12 @@ import bookmarkRoutes from './routes/bookmarkRoutes';
 import noteRoutes from './routes/noteRoutes';
 import profileRoutes from './routes/profileRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
-import http from 'http';
 
 // Load environment variables
 dotenv.config();
 
-// Check required environment variables
-const requiredEnvVars = ['MONGODB_URI', 'JWT_SECRET'];
-const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
-
-if (missingEnvVars.length > 0) {
-  console.error('Missing required environment variables:', missingEnvVars);
-  // Don't exit in production, just log the error
-  if (process.env.NODE_ENV !== 'production') {
-    process.exit(1);
-  }
-}
-
 // Initialize express
 const app: Application = express();
-
-// Create HTTP server
-const server = http.createServer(app);
 
 // Middleware
 console.log('CORS Configuration: Setting up CORS');
