@@ -15,6 +15,18 @@ import http from 'http';
 // Load environment variables
 dotenv.config();
 
+// Check required environment variables
+const requiredEnvVars = ['MONGODB_URI', 'JWT_SECRET'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+  console.error('Missing required environment variables:', missingEnvVars);
+  // Don't exit in production, just log the error
+  if (process.env.NODE_ENV !== 'production') {
+    process.exit(1);
+  }
+}
+
 // Initialize express
 const app: Application = express();
 
@@ -85,7 +97,11 @@ app.get('/api/v1/test-cors', (req, res) => {
 
 // Health check route
 app.get('/api/v1/health', (req, res) => {
-  res.status(200).json({ status: 'OK' });
+  res.status(200).json({ 
+    status: 'OK',
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Routes
@@ -159,7 +175,10 @@ const initializeApp = async () => {
     console.log('Database connected successfully');
   } catch (error) {
     console.error('Failed to initialize app:', error);
-    throw error;
+    // Don't throw in production, just log the error
+    if (process.env.NODE_ENV !== 'production') {
+      throw error;
+    }
   }
 };
 
