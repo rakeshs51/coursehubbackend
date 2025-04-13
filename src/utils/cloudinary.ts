@@ -126,7 +126,12 @@ export const uploadToCloudinary = async (file: Express.Multer.File) => {
       path: file.path
     });
 
-    // Check if file exists and get stats
+    // Check if file exists
+    if (!fs.existsSync(file.path)) {
+      throw new Error(`File not found at path: ${file.path}`);
+    }
+
+    // Get file stats
     const stat = await promisify(fs.stat)(file.path);
     console.log('File stats:', {
       size: stat.size,
@@ -142,7 +147,13 @@ export const uploadToCloudinary = async (file: Express.Multer.File) => {
     });
 
     // Clean up local file
-    await promisify(fs.unlink)(file.path);
+    try {
+      await promisify(fs.unlink)(file.path);
+      console.log('Local file cleaned up successfully');
+    } catch (cleanupError) {
+      console.error('Error cleaning up local file:', cleanupError);
+      // Don't throw here, as the upload was successful
+    }
 
     return result;
   } catch (error) {

@@ -5,16 +5,20 @@ services:
     buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
+      # Non-sensitive variables (can be committed to git)
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 5000
       - key: ALLOWED_ORIGINS
-        value: https://coursehub-frontend.vercel.app,http://localhost:3000
+        value: https://coursehub-frontend-97iznr21d-rakesh-ss-projects.vercel.app,https://coursehub-frontend.vercel.app,http://localhost:3000,https://coursehubbackend-ldo8.onrender.com
       - key: FRONTEND_URL
-        value: https://coursehub-frontend.vercel.app
+        value: https://coursehub-frontend-97iznr21d-rakesh-ss-projects.vercel.app
       - key: JWT_EXPIRE
         value: 30d
+      
+      # Sensitive variables (must be set in Render dashboard)
+      # DO NOT commit these values to git
       - key: MONGODB_URI
         sync: false
       - key: JWT_SECRET
