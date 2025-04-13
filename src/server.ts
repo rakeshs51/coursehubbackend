@@ -161,37 +161,17 @@ const initializeApp = async () => {
     }
   } catch (error) {
     console.error('Failed to initialize app:', error);
-    // In production, log the error but don't throw
-    if (process.env.NODE_ENV !== 'production') {
-      throw error;
-    }
+    throw error;
   }
 };
 
-// Initialize database connection immediately for non-serverless environments
-if (process.env.NODE_ENV !== 'production') {
-  initializeApp();
-}
+// Initialize database connection
+initializeApp();
 
-// For production/Vercel, initialize DB connection per request
-if (process.env.NODE_ENV === 'production') {
-  app.use(async (req, res, next) => {
-    try {
-      await initializeApp();
-      next();
-    } catch (error) {
-      console.error('Database connection error:', error);
-      next(error);
-    }
-  });
-}
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
-// Start server if not running in Vercel
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
-}
-
-// Export the Express app for Vercel
+// Export the Express app
 export default app;
